@@ -4,6 +4,17 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {AppProvider} from "./modules/app/AppProvider";
+import {
+    createBrowserRouter,
+    RouterProvider,
+} from "react-router-dom";
+
+const router = createBrowserRouter([
+    {
+        path: "/*",
+        element: <App />,
+    },
+]);
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -11,7 +22,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
       <AppProvider>
-        <App />
+          <RouterProvider router={router} /> 
       </AppProvider>
   </React.StrictMode>
 );
