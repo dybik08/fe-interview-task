@@ -1,5 +1,6 @@
 import {useQuery} from "react-query";
-import { DateRangeApiFormat, HouseStatisticsApi, HouseType } from "./HouseStatistics.api";
+import { useApi } from "../../api/Api.context";
+import { DateRangeApiFormat, HouseType } from "./PropertyStatistics.api";
 
 export const houseStatisticsListQueryKey = (numberOfQuarters: number, houseTypeKey: string) => ["houseStatisticsApi.getHouseStatistics", numberOfQuarters, houseTypeKey]
 
@@ -12,9 +13,7 @@ const getHouseTypesKey = (houseType: HouseType[]): string => {
 type HouseStatisticsReadModel = Record<HouseType, number[]>
 
 type HouseStatisticsDto = {
-    data: {
-        value: number[]
-    }
+    value: number[]
 }
 
 const defaultValue: HouseStatisticsReadModel = {
@@ -24,7 +23,7 @@ const defaultValue: HouseStatisticsReadModel = {
 }
 
 const mapDtoToReadModel = (dto: HouseStatisticsDto, houseTypes: HouseType[], dateRange: DateRangeApiFormat): HouseStatisticsReadModel => {
-    const dataSet = dto.data.value;
+    const dataSet = dto.value;
 
     return houseTypes.reduce((acc, curr, index) => {
         const sliceParams = {
@@ -37,12 +36,12 @@ const mapDtoToReadModel = (dto: HouseStatisticsDto, houseTypes: HouseType[], dat
     }, defaultValue)
 }
 
-export const useListHouseStatistics = (houseType: HouseType[], dateRange: DateRangeApiFormat) => {
-    const houseStatisticsApi = new HouseStatisticsApi()
+export const useListPropertyStatistics = (houseType: HouseType[], dateRange: DateRangeApiFormat) => {
+    const {propertyStatisticsApi} = useApi()
     
-    const { data: houseStatistics = defaultValue, isLoading: loading, error } = useQuery<HouseStatisticsReadModel, Error>(houseStatisticsListQueryKey(dateRange.length, getHouseTypesKey(houseType)), async () => {
+    const { data: propertyStatistics = defaultValue, isLoading: loading, error } = useQuery<HouseStatisticsReadModel, Error>(houseStatisticsListQueryKey(dateRange.length, getHouseTypesKey(houseType)),  async () => {
             try {
-                return await houseStatisticsApi.getHouseStatistics(houseType, dateRange).then(dto => {
+                return await propertyStatisticsApi.getPropertyStatistics(houseType, dateRange).then(dto => {
                     return mapDtoToReadModel(dto, houseType, dateRange)
                 })
             } catch (error) {
@@ -53,7 +52,7 @@ export const useListHouseStatistics = (houseType: HouseType[], dateRange: DateRa
     )
     
     return {
-        houseStatistics,
+        propertyStatistics,
         loading,
         error
     }

@@ -1,7 +1,8 @@
 import axios from 'axios'
+import { HttpClient } from '../../api'
 
-interface IHouseStatisticsApi {
-    getHouseStatistics: (houseType: HouseType[], dateRange: DateRangeApiFormat) => Promise<any>
+export interface IPropertyStatisticsApi {
+    getPropertyStatistics: (houseType: HouseType[], dateRange: DateRangeApiFormat) => Promise<any>
 }
 
 export enum HouseType {
@@ -23,11 +24,15 @@ export type DateRange ={
 
 export type DateRangeApiFormat = string[]
 
-export class HouseStatisticsApi implements IHouseStatisticsApi {
+export class PropertyStatisticsApi implements IPropertyStatisticsApi {
     baseUrl = "https://data.ssb.no/api/v0/no/table/07241"
     // house type, quartal ranges e.g { from: 2020K1, to: 2022K1 }
-    getHouseStatistics(houseType: HouseType[], dateRange: DateRangeApiFormat): Promise<any> {
-        return axios.post(this.baseUrl, {
+    
+    constructor(private readonly client: HttpClient) {
+    }
+    
+    getPropertyStatistics(houseType: HouseType[], dateRange: DateRangeApiFormat): Promise<any> {
+        return this.client.post(this.baseUrl, {
             "query": [
                 {
                     "code": "Boligtype",
