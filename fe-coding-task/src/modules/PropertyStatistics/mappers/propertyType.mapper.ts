@@ -1,4 +1,4 @@
-import {HouseType} from "../../api/HouseStatistics.api";
+import {HouseType} from "../api";
 
 export class PropertyTypeMapper {
     static mapPropertyTypeToString = (houseType: HouseType) => {

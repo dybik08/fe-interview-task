@@ -1,4 +1,4 @@
-import {HouseType} from "../../api/HouseStatistics.api";
+import {HouseType} from "../api";
 import {PropertyTypeMapper} from "./propertyType.mapper";
 
 

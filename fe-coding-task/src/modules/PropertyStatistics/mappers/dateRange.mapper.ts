@@ -1,4 +1,4 @@
-import {DateRange, DateRangeApiFormat} from "../../api/HouseStatistics.api";
+import {DateRange, DateRangeApiFormat} from "../api";
 import {validateFromYear, validateQuarter, validateToYear} from "../../utils";
 
 export class DateRangeMapper {
