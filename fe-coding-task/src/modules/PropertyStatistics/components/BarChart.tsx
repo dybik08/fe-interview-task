@@ -1,9 +1,8 @@
-import {useListHouseStatistics} from "../../api/HouseStatistics.controller";
-import {DateRangeApiFormat, HouseType} from "../../api/HouseStatistics.api";
+import {useListPropertyStatistics, DateRangeApiFormat, HouseType} from "../api";
 import {Bar} from "react-chartjs-2";
 import React from "react";
-import {DateRangeMapper, PropertyTypeMapper, BarChartMapper} from "../../HouseStatistics/mappers";
-import {usePropertyStatisticsSearchParams} from "../../HouseStatistics/hooks";
+import {DateRangeMapper, PropertyTypeMapper, BarChartMapper} from "../mappers";
+import {usePropertyStatisticsSearchParams} from "../hooks";
 
 export const BarChartsWrapper = () => {
     const {propertyTypeSearchParam, to, from} = usePropertyStatisticsSearchParams()
@@ -22,14 +21,14 @@ export const BarChartsWrapper = () => {
     )
 }
 
-interface IBarChartProps {
+interface IBarChartsProps {
     dateRange: DateRangeApiFormat
     propertyType: HouseType[]
 }
 
-const BarCharts = ({dateRange, propertyType}: IBarChartProps) => {
+const BarCharts = ({dateRange, propertyType}: IBarChartsProps) => {
 
-    const {error, loading, houseStatistics} = useListHouseStatistics(propertyType, dateRange )
+    const {error, loading, propertyStatistics} = useListPropertyStatistics(propertyType, dateRange )
     
     if(loading) {
         return <div className="my-10 w-96 flex justify-center items-center" >
@@ -53,9 +52,9 @@ const BarCharts = ({dateRange, propertyType}: IBarChartProps) => {
     const labels = dateRange.map(quarter => quarter)
     const barChartMapper = new BarChartMapper(labels, dateRange)
     
-    const datasetSmahus = houseStatistics[HouseType.Smahus]
-    const datasetBolinger = houseStatistics[HouseType.Boliger]
-    const datasetBlokkleiligheter = houseStatistics[HouseType.Blokkleiligheter]
+    const datasetSmahus = propertyStatistics[HouseType.Smahus]
+    const datasetBolinger = propertyStatistics[HouseType.Boliger]
+    const datasetBlokkleiligheter = propertyStatistics[HouseType.Blokkleiligheter]
     
     const dataSmahus = barChartMapper.mapDataSetToChartData(datasetSmahus, HouseType.Smahus)
     
