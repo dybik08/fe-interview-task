@@ -2,44 +2,37 @@ import {useListHouseStatistics} from "../../api/HouseStatistics.controller";
 import {DateRangeApiFormat, HouseType} from "../../api/HouseStatistics.api";
 import {Bar} from "react-chartjs-2";
 import React from "react";
-import {useSearchParams} from "react-router-dom";
-import {DateRangeMapper} from "../../HouseStatistics/mappers";
+import {DateRangeMapper, PropertyTypeMapper, BarChartMapper} from "../../HouseStatistics/mappers";
+import {usePropertyStatisticsSearchParams} from "../../HouseStatistics/hooks";
 
-const mapHouseTypeToString = (houseType: HouseType) => {
-    if(HouseType.Smahus) return "Smahus"
-    if(HouseType.Boliger) return "Boliger"
-
-    return "Blokkleiligheter"
-}
-
-export const BarChartWrapper = () => {
-    const [searchParams] = useSearchParams();
-    const from = searchParams.get("from")
-    const to = searchParams.get("to")
+export const BarChartsWrapper = () => {
+    const {propertyTypeSearchParam, to, from} = usePropertyStatisticsSearchParams()
     
-    if(!from || !to) return null
+    if(!from || !to || !propertyTypeSearchParam) return null
+    
+    const propertyType = PropertyTypeMapper.mapSearchParamToPropertyType(propertyTypeSearchParam)
     
     const formValues = DateRangeMapper.mapQueryParamsToFormValues(from, to)
     const dateRange = DateRangeMapper.mapDateRangeToQuarterList(formValues)
     
     return (
         <>
-            {dateRange && <BarChart dateRange={dateRange} />}
+            {dateRange && <BarCharts dateRange={dateRange} propertyType={propertyType} />}
         </>
     )
 }
 
 interface IBarChartProps {
     dateRange: DateRangeApiFormat
+    propertyType: HouseType[]
 }
 
-const BarChart = ({dateRange}: IBarChartProps) => {
+const BarCharts = ({dateRange, propertyType}: IBarChartProps) => {
 
-    const {error, loading, houseStatistics} = useListHouseStatistics([HouseType.Smahus], dateRange )
+    const {error, loading, houseStatistics} = useListHouseStatistics(propertyType, dateRange )
     
     if(loading) {
         return <div className="my-10 w-96 flex justify-center items-center" >
-            {/*<Skeleton variant="rectangular" width={400} height={118}/>*/}
             <div className="loader"/>
         </div>
     }
@@ -56,25 +49,28 @@ const BarChart = ({dateRange}: IBarChartProps) => {
             },
         },
     };
-
+    
     const labels = dateRange.map(quarter => quarter)
-
-    const data = {
-        labels,
-        datasets: [
-            {
-                label: mapHouseTypeToString(HouseType.Smahus),
-                data: dateRange.map((_, index) => {
-                    return houseStatistics.data.value[index]
-                }),
-                backgroundColor: 'rgba(26, 179, 37, 0.8)',
-            },
-        ],
-    };
+    const barChartMapper = new BarChartMapper(labels, dateRange)
+    
+    const datasetSmahus = houseStatistics[HouseType.Smahus]
+    const datasetBolinger = houseStatistics[HouseType.Boliger]
+    const datasetBlokkleiligheter = houseStatistics[HouseType.Blokkleiligheter]
+    
+    const dataSmahus = barChartMapper.mapDataSetToChartData(datasetSmahus, HouseType.Smahus)
+    
+    const dataBolinger = barChartMapper.mapDataSetToChartData(datasetBolinger, HouseType.Boliger)
+ 
+    const dataBlokkleiligheter = barChartMapper.mapDataSetToChartData(datasetBlokkleiligheter, HouseType.Blokkleiligheter)
 
     return (
-        <div className="w-96" >
-            <Bar options={options} data={data} />
+        <div className="w-96 space-y-6" >
+            {/* smahus */}
+            {datasetSmahus.length > 0 && <Bar options={options} data={dataSmahus}/>}
+            {/* bolinger */}
+            {datasetBolinger.length > 0 && <Bar options={options} data={dataBolinger}/>}
+            {/* Blokkleiligheter */}
+            {datasetBlokkleiligheter.length > 0 && <Bar options={options} data={dataBlokkleiligheter}/>}
         </div>
     )
 }
