@@ -21,4 +21,6 @@ Dodatkowym, mocno ułatwijącym testowanie rozwiązaniem jest wprowadzenie abstr
 Odpowiadają one za wygodniejszy setup testów, mockowanie danych z API o czym mógłbym opowiedzieć więcej na konretnym przykładzie. 
 Dodatkową abstrakcją, którą dodałbym w projekcie są dto buildery, które w wygodny sposób pomagają zamockować dane z API.
 Poza dodatkowymi abstrakcjami przydałby się jeszcze drobny refaktor kodu, żeby uwspólnić nazewnictwo "House" i 
-"Property" co poprawi czytelność kodu. 
+"Property" co poprawi czytelność kodu. Dodatkowo przeniósłbym pliki z modules/api do modules/HouseStatistics/api, tak żeby 
+kod powiązany z modułem HouseStatistics był w tym module. Do modułu /api nadają się bardziej pliku typu ApiContext i HttpClient, ogólnie
+powiązane z samym api. Są to rzeczy, które postaram się dowieźć dzisiaj 14.12 wieczorem w ramach ostatnich szlifów zadanka.
