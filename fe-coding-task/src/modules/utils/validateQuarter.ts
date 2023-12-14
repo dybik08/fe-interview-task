@@ -18,5 +18,3 @@ export const validateQuarter = (toYear:number, quarter: number): 1 | 2 | 3 | 4 =
     
     return (quarter as 1 | 2 | 3 | 4) 
 }
-
-// const quarterOfYear = (date = new Date()) => Math.ceil((date.getMonth() + 1) / 3)
