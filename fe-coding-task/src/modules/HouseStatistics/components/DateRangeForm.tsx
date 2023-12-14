@@ -1,31 +1,29 @@
 import React from "react";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {useSearchParams} from "react-router-dom";
 import { validateFromYear } from "../../utils";
 import { DateRangeMapper } from "../mappers";
+import {usePropertyStatisticsSearchParams} from "../hooks";
 
-type Inputs = {
+type DateRangeFormInputs = {
     from: string
     quarterFrom: 1 | 2 | 3 | 4
     to: string
     quarterTo: 1 | 2 | 3 | 4
+    propertyType: string[]
 }
 
-export const DateRangeForm = () => {
+const useDateRangeForm = () => {
     const {
         register,
         handleSubmit,
         setValue,
         formState: { errors, isSubmitSuccessful },
-    } = useForm<Inputs>()
+    } = useForm<DateRangeFormInputs>()
 
-    const [searchParams, setSearchParams] = useSearchParams();
+    const {setSearchParams, propertyTypeSearchParam, from, to} = usePropertyStatisticsSearchParams()
 
-    const from = searchParams.get("from")
-    const to = searchParams.get("to")
-    
-   
-    const setFormValuesFromQueryParams = (from: string, to: string) => {
+    const setFormValuesFromQueryParams = (from: string, to: string, propertyType: string) => {
+        const propertyTypes = propertyType.split(',')
         const formValues = DateRangeMapper.mapQueryParamsToFormValues(from, to)
         const yearFrom = validateFromYear(formValues.from.year)
 
@@ -33,22 +31,24 @@ export const DateRangeForm = () => {
         setValue('quarterFrom', formValues.from.quarter)
         setValue('to', formValues.to.year.toString())
         setValue('quarterTo', formValues.to.quarter)
+        setValue('propertyType', propertyTypes)
     }
-    
+
     // check if there are query params e.g from pasted url
-    if(from && to) {
-        setFormValuesFromQueryParams(from, to)
+    if(from && to && propertyTypeSearchParam) {
+        setFormValuesFromQueryParams(from, to, propertyTypeSearchParam)
     } else {
         // check local storage if there are any values
         const from = localStorage.getItem("from");
         const to = localStorage.getItem("to")
-        
-        if(from && to) {
-            setFormValuesFromQueryParams(from, to)
+        const propertyType = localStorage.getItem("propertyType")
+
+        if(from && to && propertyType) {
+            setFormValuesFromQueryParams(from, to, propertyType)
         }
     }
 
-     const onSubmit: SubmitHandler<Inputs> = (data) => {
+    const onSubmit: SubmitHandler<DateRangeFormInputs> = (data) => {
         setSearchParams(prev => {
             const queryParams = DateRangeMapper.mapFormValuesToQueryParams({
                 from: {
@@ -58,15 +58,29 @@ export const DateRangeForm = () => {
                 to: {
                     year: parseInt(data.to),
                     quarter: data.quarterTo
-                }
-            })
+                },
+            }, data.propertyType)
 
             localStorage.setItem("from", queryParams.from);
             localStorage.setItem("to", queryParams.to);
+            localStorage.setItem("propertyType", queryParams.propertyType);
 
             return queryParams
         })
     }
+    
+    return {
+        handleSubmit,
+        onSubmit,
+        register
+    }
+}
+
+export const DateRangeForm = () => {
+    const {
+        handleSubmit,
+        onSubmit, register
+    } = useDateRangeForm()
 
     return (
         <form className="flex flex-col w-96" onSubmit={handleSubmit(onSubmit)}>
@@ -81,6 +95,14 @@ export const DateRangeForm = () => {
                 <input id="year-end" type="number" min="2009" max="2023" step="1" defaultValue="2016" {...register("to")}  />
                 <label className="pr-6" htmlFor="year-end" >Quarter:</label>
                 <input id="year-end-quarter" type="number" min="1" max="4" step="1" defaultValue="1" {...register("quarterTo")}  />
+            </div>
+            <div className="mt-6 space-x-6" >
+                <label htmlFor="property-type">Choose a type of property:</label>
+                <select multiple {...register("propertyType")}    >
+                    <option value="Småhus">Småhus</option>
+                    <option value="Blokkleiligheter">Blokkleiligheter</option>
+                    <option value="Boliger-i-alt">Boliger i alt</option>
+                </select>
             </div>
             <div className="mt-6 flex justify-end" >
                 <input className="items-start" type="submit"/>
