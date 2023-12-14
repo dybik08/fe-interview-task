@@ -29,10 +29,14 @@ export class DateRangeMapper {
         return result
     }
 
-    static mapFormValuesToQueryParams(dateRange: DateRange) {
+    static mapFormValuesToQueryParams(dateRange: DateRange, propertyType: string[]) {
         return {
             from: `${dateRange.from.year}K${dateRange.from.quarter}`,
-            to: `${dateRange.to.year}K${dateRange.to.quarter}`
+            to: `${dateRange.to.year}K${dateRange.to.quarter}`,
+            propertyType: propertyType.reduce((acc, curr, index) => {
+                const shouldAddComa = index > 0;
+              return `${acc}${shouldAddComa ? "," : ''}${curr}`  
+            },"")
         }
     }
 
