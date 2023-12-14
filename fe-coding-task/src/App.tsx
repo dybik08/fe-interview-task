@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import {BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip,} from 'chart.js';
-import {BarChartsWrapper, DateRangeForm} from "./modules/HouseStatistics";
+import {BarChartsWrapper, DateRangeForm} from "./modules/PropertyStatistics";
 
 ChartJS.register(
     CategoryScale,
