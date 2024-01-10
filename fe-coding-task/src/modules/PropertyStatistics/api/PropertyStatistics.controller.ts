@@ -1,4 +1,4 @@
-import {useQuery} from "react-query";
+import {useQuery  } from "react-query";
 import { useApi } from "../../api/Api.context";
 import { DateRangeApiFormat, HouseType } from "./PropertyStatistics.api";
 
@@ -10,7 +10,7 @@ const getHouseTypesKey = (houseType: HouseType[]): string => {
     }, "")
 }
 
-type HouseStatisticsReadModel = Record<HouseType, number[]>
+export type HouseStatisticsReadModel = Record<HouseType, number[]>
 
 type HouseStatisticsDto = {
     value: number[]
@@ -36,24 +36,43 @@ const mapDtoToReadModel = (dto: HouseStatisticsDto, houseTypes: HouseType[], dat
     }, defaultValue)
 }
 
-export const useListPropertyStatistics = (houseType: HouseType[], dateRange: DateRangeApiFormat) => {
+interface IUseListPropertyStatistics {
+    houseType: HouseType[]
+    dateRange: DateRangeApiFormat,
+    enabled: boolean,
+    onSuccess: (dateRange: DateRangeApiFormat , houseType: HouseType[], searchData: HouseStatisticsReadModel) => void
+}
+
+export const useListPropertyStatistics = ({dateRange, houseType, enabled = false, onSuccess}: IUseListPropertyStatistics) => {
     const {propertyStatisticsApi} = useApi()
-    
-    const { data: propertyStatistics = defaultValue, isLoading: loading, error } = useQuery<HouseStatisticsReadModel, Error>(houseStatisticsListQueryKey(dateRange.length, getHouseTypesKey(houseType)),  async () => {
+
+    const defaultValues = {
+        dateRange: dateRange || [],
+        houseType: houseType || []
+    }
+
+    const { data: propertyStatistics = defaultValue, isLoading: loading, error } = useQuery<HouseStatisticsReadModel, Error>(houseStatisticsListQueryKey(defaultValues.dateRange.length, getHouseTypesKey(defaultValues.houseType)),  async () => {
             try {
-                return await propertyStatisticsApi.getPropertyStatistics(houseType, dateRange).then(dto => {
-                    return mapDtoToReadModel(dto, houseType, dateRange)
+                return await propertyStatisticsApi.getPropertyStatistics(defaultValues.houseType, defaultValues.dateRange || []).then(dto => {
+                    return mapDtoToReadModel(dto, defaultValues.houseType, defaultValues.dateRange)
                 })
             } catch (error) {
                 throw new Error("Could not load house statistics: ")
             }
         },
-        { refetchOnWindowFocus: false, staleTime: 10000}
+        { 
+            refetchOnWindowFocus: false, staleTime: 10000, enabled: enabled, 
+            onSuccess: (data) => {
+                onSuccess(
+                    dateRange, houseType, data
+                )
+            }
+        }
     )
     
     return {
         propertyStatistics,
         loading,
-        error
+        error,
     }
 }
