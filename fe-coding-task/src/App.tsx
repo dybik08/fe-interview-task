@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { PropsWithChildren} from 'react';
 import './App.css';
 import {BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip,} from 'chart.js';
-import {BarChartsWrapper, DateRangeForm} from "./modules/PropertyStatistics";
+import {List, ListItem, ListItemIcon, ListItemText} from '@mui/material';
+import {
+    Link as RouterLink,
+    LinkProps as RouterLinkProps,
+} from "react-router-dom"
 
 ChartJS.register(
     CategoryScale,
@@ -12,19 +16,47 @@ ChartJS.register(
     Legend
 );
 
-function App() {
+
+const Link = React.forwardRef<HTMLAnchorElement, RouterLinkProps>(function Link(
+    itemProps,
+    ref,
+) {
+    return <RouterLink ref={ref} {...itemProps} role={undefined} />;
+});
+
+interface ListItemLinkProps {
+    icon?: React.ReactElement;
+    primary: string;
+    to: string;
+}
+
+function ListItemLink(props: ListItemLinkProps) {
+    const { icon, primary, to } = props;
+
+    return (
+        <li>
+            <ListItem button component={Link} to={to}>
+                {icon ? <ListItemIcon>{icon}</ListItemIcon> : null}
+                <ListItemText primary={primary} />
+            </ListItem>
+        </li>
+    );
+}
+
+
+function App({children}: PropsWithChildren<{}>) {
   return (
-      <div className="flex m-10 justify-center items-center" >
-          <div className="p-10 flex flex-col justify-center items-center bg-white rounded-3xl">
-              <header className="px-10">
-                  <p className="py-10">
-                      Norway statistics on the average price per square meter
-                  </p>
-              </header>
-              <DateRangeForm/>
-              <BarChartsWrapper/>
+      
+          <div className="flex">
+            {/* navigation side panel */}
+              <div className="mt-10" >
+                  <List>
+                      <ListItemLink to={"/"} primary={"Home"} />
+                      <ListItemLink to={"/search-history"} primary={"Search History"} />
+                  </List>
+              </div>
+              <div>{children}</div>
           </div>
-      </div>
   );
 }
 
