@@ -1,40 +1,26 @@
-import {useListPropertyStatistics, DateRangeApiFormat, HouseType} from "../api";
+import { HouseType} from "../api";
 import {Bar} from "react-chartjs-2";
 import React from "react";
-import {DateRangeMapper, PropertyTypeMapper, BarChartMapper} from "../mappers";
+import {BarChartMapper} from "../mappers";
 import {usePropertyStatisticsSearchParams} from "../hooks";
+import {usePropertyStatisticsContext} from "../context";
 
 export const BarChartsWrapper = () => {
     const {propertyTypeSearchParam, to, from} = usePropertyStatisticsSearchParams()
-    
     if(!from || !to || !propertyTypeSearchParam) return null
-    
-    const propertyType = PropertyTypeMapper.mapSearchParamToPropertyType(propertyTypeSearchParam)
-    
-    const formValues = DateRangeMapper.mapQueryParamsToFormValues(from, to)
-    const dateRange = DateRangeMapper.mapDateRangeToQuarterList(formValues)
-    
+
     return (
         <>
-            {dateRange && <BarCharts dateRange={dateRange} propertyType={propertyType} />}
+            <BarCharts  />
         </>
     )
 }
 
-interface IBarChartsProps {
-    dateRange: DateRangeApiFormat
-    propertyType: HouseType[]
-}
+interface IBarChartsProps {}
 
-const BarCharts = ({dateRange, propertyType}: IBarChartsProps) => {
+const BarCharts = ({}: IBarChartsProps) => {
 
-    const {error, loading, propertyStatistics} = useListPropertyStatistics(propertyType, dateRange )
-    
-    if(loading) {
-        return <div className="my-10 w-96 flex justify-center items-center" >
-            <div className="loader"/>
-        </div>
-    }
+    const {propertyStatistics, formValues} = usePropertyStatisticsContext()
 
     const options = {
         responsive: true,
@@ -48,6 +34,8 @@ const BarCharts = ({dateRange, propertyType}: IBarChartsProps) => {
             },
         },
     };
+    
+    const {dateRange} = formValues;
     
     const labels = dateRange.map(quarter => quarter)
     const barChartMapper = new BarChartMapper(labels, dateRange)
