@@ -17,16 +17,13 @@ export const SearchHistoryPage = () => {
     }
 
     return (
-        <div className="flex m-10">
-            <div className="p-10 flex flex-col bg-white rounded-3xl">
-                <header className="px-10">
-                    <p className="py-10">
-                        History of your previous searches
-                    </p>
+        <div className="w-full bg-white rounded-3xl ">
+            <div className="p-10">
+                <header className="text-3xl font-bold">
+                        Search History
                 </header>
                 <div className="flex space-x-6" >
                     <div>
-                        <p>Search History:</p>
                         <SearchHistoryList searchHistory={searchHistory} setSelectedHistoryEntry={(historyEntry: SearchHistoryEntry) => setSelectedHistoryEntry(historyEntry)} />
                     </div>
                     <div>

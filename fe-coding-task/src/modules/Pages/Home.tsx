@@ -3,15 +3,18 @@ import React from "react";
 
 export const HomePage = () => {
     return (
-        <div className="flex m-10 justify-center items-center">
-            <div className="p-10 flex flex-col justify-center items-center bg-white rounded-3xl">
-                <header className="px-10">
-                    <p className="py-10">
+        <div className="w-full bg-white rounded-3xl ">
+            <div className="p-10" >
+                <header className="text-3xl font-bold">
+                    Dashboard
+                </header>
+                <div className="mt-10 space-y-6 flex flex-col justify-center items-center ">
+                    <p className="text-xl">
                         Norway statistics on the average price per square meter
                     </p>
-                </header>
-                <DateRangeForm/>
-                <BarChartsWrapper/>
+                    <DateRangeForm/>
+                    <BarChartsWrapper/>
+                </div>
             </div>
         </div>
     )

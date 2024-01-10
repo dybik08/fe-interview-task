@@ -6,6 +6,8 @@ import {
     Link as RouterLink,
     LinkProps as RouterLinkProps,
 } from "react-router-dom"
+import HomeIcon from '@mui/icons-material/Home';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 
 ChartJS.register(
     CategoryScale,
@@ -49,13 +51,13 @@ function App({children}: PropsWithChildren<{}>) {
       
           <div className="flex">
             {/* navigation side panel */}
-              <div className="mt-10" >
-                  <List>
-                      <ListItemLink to={"/"} primary={"Home"} />
-                      <ListItemLink to={"/search-history"} primary={"Search History"} />
+              <div className="mt-10 w-56" >
+                  <List className="" >
+                      <ListItemLink icon={<HomeIcon/>}  to={"/"} primary={"Home"} />
+                      <ListItemLink icon={<ManageSearchIcon/>} to={"/search-history"} primary={"Search History"} />
                   </List>
               </div>
-              <div>{children}</div>
+              <div className="w-full" >{children}</div>
           </div>
   );
 }
