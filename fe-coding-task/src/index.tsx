@@ -8,12 +8,21 @@ import {
     createBrowserRouter,
     RouterProvider,
 } from "react-router-dom";
+import {SearchHistoryPage, HomePage} from './modules/Pages'
 
 const router = createBrowserRouter([
     {
-        path: "/*",
-        element: <App />,
+        path: "/",
+        element: <App>
+            <HomePage/>
+        </App>,
     },
+    {
+        path: '/search-history',
+        element: <App>
+            <SearchHistoryPage/>
+        </App>
+    }
 ]);
 
 const root = ReactDOM.createRoot(
@@ -22,7 +31,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
       <AppProvider>
-          <RouterProvider router={router} /> 
+          <RouterProvider router={router}/> 
       </AppProvider>
   </React.StrictMode>
 );
