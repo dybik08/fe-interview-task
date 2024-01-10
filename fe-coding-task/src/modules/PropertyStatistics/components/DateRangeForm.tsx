@@ -23,30 +23,6 @@ const useDateRangeForm = () => {
     
     const {setFormValues, setFormSubmitted} = usePropertyStatisticsContext()
 
-    // const dateRange = DateRangeMapper.mapDateRangeToQuarterList({
-    //     from: {
-    //         year: parseInt(formValues.from),
-    //         quarter: 1
-    //     },
-    //     to: {
-    //         year: parseInt(formValues.to),
-    //         quarter: 1
-    //     }
-    // })
-    
-    // const foo = PropertyTypeMapper.mapFormValueToPropertyType(formValues.propertyType)
-    //
-    // const baz = {
-    //     enabled: formSubmitted,
-    //     dateRange,
-    //     houseType: foo,
-    //     onSuccess: () => setFormSubmitted(false)
-    // }
-    //
-    // const {propertyStatistics} = useListPropertyStatistics(baz)
-    //
-    // console.log({propertyStatistics});
-
     const {setSearchParams, propertyTypeSearchParam, from, to} = usePropertyStatisticsSearchParams()
 
     const setFormValuesFromQueryParams = (from: string, to: string, propertyType: string) => {
@@ -62,22 +38,20 @@ const useDateRangeForm = () => {
     }
 
     // check if there are query params e.g from pasted url
-    // if(from && to && propertyTypeSearchParam) {
-    //     setFormValuesFromQueryParams(from, to, propertyTypeSearchParam)
-    // } else {
-    //     // check local storage if there are any values
-    //     const from = localStorage.getItem("from");
-    //     const to = localStorage.getItem("to")
-    //     const propertyType = localStorage.getItem("propertyType")
-    //
-    //     if(from && to && propertyType) {
-    //         setFormValuesFromQueryParams(from, to, propertyType)
-    //     }
-    // }
+    if(from && to && propertyTypeSearchParam) {
+        setFormValuesFromQueryParams(from, to, propertyTypeSearchParam)
+    } else {
+        // check local storage if there are any values
+        const from = localStorage.getItem("from");
+        const to = localStorage.getItem("to")
+        const propertyType = localStorage.getItem("propertyType")
+
+        if(from && to && propertyType) {
+            setFormValuesFromQueryParams(from, to, propertyType)
+        }
+    }
 
     const onSubmit: SubmitHandler<DateRangeFormInputs> = (data) => {
-        // fetch data here
-        
         const dateRange = {
             from: {
                 year: parseInt(data.from),
@@ -100,18 +74,9 @@ const useDateRangeForm = () => {
             
             return queryParams
         })
-
-        // queryClient.refetchQueries("houseStatisticsApi.getHouseStatistics")
-
+        
         const dateRangeS = DateRangeMapper.mapDateRangeToQuarterList(dateRange)
-        //
-        // console.log("data.propertyType: ", data.propertyType)
-        //
-        // getPropertyStatistics({
-        //     dateRange: dateRangeS,
-        //     houseType: [],
-        //     enabled: false
-        // })
+ 
         setFormValues({
             dateRange: dateRangeS,
             houseType: PropertyTypeMapper.mapFormValueToPropertyType(data.propertyType)
@@ -133,7 +98,7 @@ export const DateRangeForm = () => {
     } = useDateRangeForm()
 
     return (
-        <form className="flex flex-col w-96" onSubmit={handleSubmit(onSubmit)}>
+        <form className="flex flex-col items-center w-full" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex space-x-6">
                 <label className="inline-block pr-6 w-40" htmlFor="year-start" >Year from:</label>
                 <input id="year-start" type="number" min="2009" max="2023" step="1" defaultValue="2016" {...register("from")}  />
