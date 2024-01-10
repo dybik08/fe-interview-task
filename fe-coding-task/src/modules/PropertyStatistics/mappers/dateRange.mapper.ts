@@ -28,6 +28,8 @@ export class DateRangeMapper {
 
         return result
     }
+    
+    // dodać statyczną metodę na mapowanie DateRangeApiFormat -> DateRange
 
     static mapFormValuesToQueryParams(dateRange: DateRange, propertyType: string[]) {
         return {

@@ -18,4 +18,17 @@ export class PropertyTypeMapper {
             return HouseType.Blokkleiligheter
         })
     }
+    
+    static mapFormValueToPropertyType = (propertyTypeFormValue?: string[]): HouseType[] => {
+        if(!propertyTypeFormValue) { 
+            return []
+        }
+        
+        return propertyTypeFormValue.map(houseType => {
+            if("Småhus" === houseType) return HouseType.Smahus
+            if("Boliger-i-alt" === houseType) return HouseType.Boliger
+
+            return HouseType.Blokkleiligheter
+        })
+    }
 }
